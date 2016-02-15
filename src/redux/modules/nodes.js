@@ -1,53 +1,86 @@
-const LOAD = 'asclepius/node/LOAD';
-const LOAD_SUCCESS = 'asclepius/node/LOAD_SUCCESS';
-const LOAD_FAIL = 'asclepius/node
-const EXPAND_NODE = 'asclepius/node/EXPAND';
+const LOAD_NODE = 'asclepius/node/LOAD_NODE';
+const LOAD_NODE_SUCCESS = 'asclepius/node/LOAD_NODE_SUCCESS';
+const LOAD_NODE_FAIL = 'asclepius/node/LOAD_NODE_FAIL';
+
+const INIT_NODES = 'asclepius/node/INIT_NODES';
+
+const EXPAND_NODE = 'asclepius/node/EXPAND_NODE';
+const COLLAPSE_NODE = 'asclepius/node/COLLAPSE_NODE';
 
 const initialState = {
-  expanded: false
+  nodes: {}, //nodes is a dictionary
+  error: null
 };
 
-export default function reducer(state = initialState, action = {}) {
-  let newState = {};
-  newState.nodes = state.nodes;
+export //TODO look up how to do ducks action constants
 
+export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
     case EXPAND_NODE:
-      newState.nodes[action.nodeId].expanded = true;
       return {
         ...state,
-        newState
+        nodes: {
+          ...state.nodes,
+          [action.nodeId]: {
+            ...state.nodes[action.nodeId],
+            expanded: true
+          }
+        }
       };
     break;
     case COLLAPSE_NODE:
-      newState.nodes[action.nodeId].expanded = false;
       return {
         ...state,
-        newState
+        nodes: {
+          ...state.nodes,
+          [action.nodeId]: {
+            ...state.nodes[action.nodeId],
+            expanded: false
+          }
+        }
       };
     break;
-    case LOAD:
-      newState.nodes[action.nodeId].loading = true;
+    case LOAD_NODE:
       return {
         ...state,
-        newState
+        nodes: {
+          ...state.nodes,
+          [action.nodeId]: {
+            ...state.nodes[action.nodeId],
+            loading: true
+          }
+        }
       };
     break;
-    case LOAD_SUCCESS:
-      newState.nodes[action.nodeId].data = action.result;
-      newState.nodes[action.nodeId].loading = false;
-      newState.nodes[action.nodeId].loaded = true;
-      newState.error = null;
+    case LOAD_NODE_SUCCESS:
       return {
         ...state,
-        newState
+        nodes: {
+          ...state.nodes,
+          [action.nodeId]: {
+            ...state.nodes[action.nodeId],
+            data: action.result,
+            loading: false,
+            loaded: true
+          }
+        },
+        error: null
       };
     break;
-    case LOAD_FAIL:
-      newState.nodes[action.nodeId].data = null;
-      newState.nodes[action.nodeId].loaded = false;
-      newState.nodes[action.nodeId].loading = false;
-      newState.error = action.error;
+    case LOAD_NODE_FAIL:
+      return (action.error && typeof action.error === 'object') ? { //did ES6 fix this?
+        ...state,
+        nodes: {
+          ...state.nodes,
+          [action.nodeId]: {
+            ...state.nodes[action.nodeId],
+            data: null,
+            loading: false,
+            loaded: false
+          }
+        },
+        error: action.error
+      } : state;
     break;
     default:
       return state;
@@ -68,7 +101,7 @@ export function expand(nodeId) {
 
 export function load(nodeId) {
   return {
-    types: [LOAD, LOAD_SUCCESS, LOAD_FAIL],
+    types: [LOAD_NODE, LOAD_NODE_SUCCESS, LOAD_NODE_FAIL],
     nodeId: nodeId,
     promise: (client) => client.get('nodes/' + nodeId)
   }
