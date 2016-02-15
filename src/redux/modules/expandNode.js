@@ -11,5 +11,11 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         expanded: true
       };
+    default:
+      return state;
   }
+};
+
+export function isExpanded() {
+  
 };
