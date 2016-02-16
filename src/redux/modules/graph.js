@@ -1,3 +1,5 @@
+import actions from './nodes';
+
 const LOAD = 'asclepius/graph/LOAD_GRAPH';
 const LOAD_SUCCESS = 'asclepius/graph/LOAD_GRAPH_SUCCESS';
 const LOAD_FAIL = 'asclepius/graph/LOAD_GRAPH_FAIL';
@@ -9,8 +11,6 @@ const ORIENT_FAIL = 'asclepius/graph/ORIENT_GRAPH_FAIL';
 
 const FILTER_ANGLE = 'asclepius/graph/FILTER_GRAPH_ANGLE';
 const FILTER_VERTEX = 'asclepius/graph/FILTER_GRAPH_VERTEX';
-
-//TODO look up import syntax and get exposed nodes actions
 
 const initialState = {
   graph: {
